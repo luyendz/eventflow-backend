@@ -178,7 +178,18 @@ app.post('/api/events/:id/checkin', auth, (req, res) => {
   ev.checkedIn.push(req.user.id);
   res.json(ev);
 });
+// Cập nhật profile
+app.put('/api/auth/profile', auth, (req, res) => {
+  const user = users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ message: 'Không tìm thấy' });
+  const { name, bio, avatar } = req.body;
+  if (name) user.name = name;
+  if (bio !== undefined) user.bio = bio;
+  if (avatar) user.avatar = avatar;
+  res.json({ id: user.id, name: user.name, email: user.email, bio: user.bio, avatar: user.avatar });
+});
 
+app.get('/', (req, res) => res.json({ message: '✅ EventFlow API đang chạy!', users: users.length, events: events.length }));
 app.get('/', (req, res) => res.json({ message: '✅ EventFlow API đang chạy!', users: users.length, events: events.length }));
 
 const PORT = process.env.PORT || 5000;
